@@ -1,0 +1,30 @@
+Hit api of server code with pk pass
+it will return you a link
+download .pkpass file from that link
+make pkpass object from response you got from that link
+and send that object to pkpassviewcontroller or present pkpassviewcontroller with that pkpass object
+not:- pkpass viewcontroller is in pkpass kit, once you enable wallet you will get everything.
+
+below is the objective c code for sample
+
+//got link from here
+ NSURLRequest *request = [NSURLRequest requestWithURL:[NSURL URLWithString:[Response objectForKey:@"link"]]];
+ //download file from that link
+            [NSURLConnection sendAsynchronousRequest:request queue:[NSOperationQueue currentQueue] completionHandler:^(NSURLResponse *response, NSData *data, NSError *error) {
+                if (error) {
+                    [APP_DELEGATE hideProgressHUD];
+                    NSLog(@"Download Error:%@",error.description);
+                }
+                if (data) {
+                    [APP_DELEGATE hideProgressHUD];
+                    //creating pkpass object from the response once downloading is done
+                    PKPass *pass = [[PKPass alloc] initWithData:data error:&error];
+                    if(pass != nil){
+                    //presenting pkpassVC wit the data pass
+                        PKAddPassesViewController *apvc = [[PKAddPassesViewController alloc] initWithPass:pass];
+                        [self presentViewController:apvc animated:YES completion:^{
+                            [[UIApplication sharedApplication] setStatusBarStyle:UIStatusBarStyleDefault];
+                        }];
+                    }
+                }
+            }];
